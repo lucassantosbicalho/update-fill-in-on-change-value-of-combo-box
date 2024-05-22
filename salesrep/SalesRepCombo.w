@@ -67,29 +67,29 @@ define variable c-rep-name as character no-undo.
 /* ***********************  Control Definitions  ********************** */
 
 /* Define the widget handle for the window                              */
-DEFINE VAR C-Win AS WIDGET-HANDLE NO-UNDO.
+define var C-Win as widget-handle no-undo.
 
 /* Definitions of the field level widgets                               */
-DEFINE VARIABLE cb-cod AS CHARACTER FORMAT "X(256)":U 
-     VIEW-AS COMBO-BOX INNER-LINES 5
-     DROP-DOWN-LIST
-     SIZE 16 BY 1 NO-UNDO.
+define variable cb-cod as character format "X(256)":U 
+     view-as combo-box inner-lines 5
+     drop-down-list
+     size 16 by 1 no-undo.
 
-DEFINE VARIABLE fill-name AS CHARACTER FORMAT "X(256)":U 
-     VIEW-AS FILL-IN 
-     SIZE 45 BY 1
-     BGCOLOR 8  NO-UNDO.
+define variable fill-name as character format "X(256)":U 
+     view-as fill-in 
+     size 45 by 1
+     bgcolor 8  no-undo.
 
 
 /* ************************  Frame Definitions  *********************** */
 
-DEFINE FRAME DEFAULT-FRAME
-     cb-cod AT ROW 3.38 COL 6 COLON-ALIGNED NO-LABEL WIDGET-ID 2
-     fill-name AT ROW 3.38 COL 24 COLON-ALIGNED NO-LABEL WIDGET-ID 4
-    WITH 1 DOWN NO-BOX KEEP-TAB-ORDER OVERLAY 
-         SIDE-LABELS NO-UNDERLINE THREE-D 
-         AT COL 1 ROW 1
-         SIZE 80 BY 16 WIDGET-ID 100.
+define frame DEFAULT-FRAME
+     cb-cod at row 3.38 col 6 colon-aligned no-label widget-id 2
+     fill-name at row 3.38 col 24 colon-aligned no-label widget-id 4
+    with 1 down no-box keep-tab-order overlay 
+         side-labels no-underline three-d 
+         at col 1 row 1
+         size 80 by 16 widget-id 100.
 
 
 /* *********************** Procedure Settings ************************ */
@@ -105,26 +105,26 @@ DEFINE FRAME DEFAULT-FRAME
 /* *************************  Create Window  ************************** */
 
 &ANALYZE-SUSPEND _CREATE-WINDOW
-IF SESSION:DISPLAY-TYPE = "GUI":U THEN
-  CREATE WINDOW C-Win ASSIGN
-         HIDDEN             = YES
-         TITLE              = "<insert window title>"
-         HEIGHT             = 16
-         WIDTH              = 80
-         MAX-HEIGHT         = 16
-         MAX-WIDTH          = 80
-         VIRTUAL-HEIGHT     = 16
-         VIRTUAL-WIDTH      = 80
-         RESIZE             = yes
-         SCROLL-BARS        = no
-         STATUS-AREA        = no
-         BGCOLOR            = ?
-         FGCOLOR            = ?
-         KEEP-FRAME-Z-ORDER = yes
-         THREE-D            = yes
-         MESSAGE-AREA       = no
-         SENSITIVE          = yes.
-ELSE {&WINDOW-NAME} = CURRENT-WINDOW.
+if session:display-type = "GUI":U then
+  create window C-Win assign
+         hidden             = yes
+         title              = "<insert window title>"
+         height             = 16
+         width              = 80
+         max-height         = 16
+         max-width          = 80
+         virtual-height     = 16
+         virtual-width      = 80
+         resize             = yes
+         scroll-bars        = no
+         status-area        = no
+         bgcolor            = ?
+         fgcolor            = ?
+         keep-frame-z-order = yes
+         three-d            = yes
+         message-area       = no
+         sensitive          = yes.
+else {&WINDOW-NAME} = current-window.
 /* END WINDOW DEFINITION                                                */
 &ANALYZE-RESUME
 
@@ -139,8 +139,8 @@ ELSE {&WINDOW-NAME} = CURRENT-WINDOW.
    FRAME-NAME                                                           */
 /* SETTINGS FOR FILL-IN fill-name IN FRAME DEFAULT-FRAME
    NO-ENABLE                                                            */
-IF SESSION:DISPLAY-TYPE = "GUI":U AND VALID-HANDLE(C-Win)
-THEN C-Win:HIDDEN = no.
+if session:display-type = "GUI":U and VALID-HANDLE(C-Win)
+then C-Win:hidden = no.
 
 /* _RUN-TIME-ATTRIBUTES-END */
 &ANALYZE-RESUME
@@ -153,7 +153,7 @@ THEN C-Win:HIDDEN = no.
 
 &Scoped-define SELF-NAME C-Win
 &ANALYZE-SUSPEND _UIB-CODE-BLOCK _CONTROL C-Win C-Win
-ON end-error OF C-Win /* <insert window title> */
+on end-error of C-Win /* <insert window title> */
 or endkey of {&WINDOW-NAME} anywhere do:
   /* This case occurs when the user presses the "Esc" key.
      In a persistently run window, just ignore this.  If we did not, the
@@ -166,7 +166,7 @@ end.
 
 
 &ANALYZE-SUSPEND _UIB-CODE-BLOCK _CONTROL C-Win C-Win
-ON window-close OF C-Win /* <insert window title> */
+on window-close of C-Win /* <insert window title> */
 do:
   /* This event will close the window and terminate the procedure.  */
   apply "CLOSE":U to this-procedure.
@@ -179,7 +179,7 @@ end.
 
 &Scoped-define SELF-NAME cb-cod
 &ANALYZE-SUSPEND _UIB-CODE-BLOCK _CONTROL cb-cod C-Win
-ON value-changed OF cb-cod IN FRAME DEFAULT-FRAME
+on value-changed of cb-cod in frame DEFAULT-FRAME
 do:
     define variable c-cod as character no-undo.
     define variable c-name as character no-undo.
@@ -223,6 +223,7 @@ do on error   undo MAIN-BLOCK, leave MAIN-BLOCK
   run enable_UI.
  
   run prPopulateCombo.
+  run prSetInitialValueCombo("DKP").
   
   if not this-procedure:persistent then
     wait-for close of this-procedure.
@@ -235,7 +236,7 @@ end.
 /* **********************  Internal Procedures  *********************** */
 
 &ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE disable_UI C-Win  _DEFAULT-DISABLE
-PROCEDURE disable_UI :
+procedure disable_UI :
 /*------------------------------------------------------------------------------
   Purpose:     DISABLE the User Interface
   Parameters:  <none>
@@ -245,16 +246,16 @@ PROCEDURE disable_UI :
                we are ready to "clean-up" after running.
 ------------------------------------------------------------------------------*/
   /* Delete the WINDOW we created */
-  IF SESSION:DISPLAY-TYPE = "GUI":U AND VALID-HANDLE(C-Win)
-  THEN DELETE WIDGET C-Win.
-  IF THIS-PROCEDURE:PERSISTENT THEN DELETE PROCEDURE THIS-PROCEDURE.
-END PROCEDURE.
+  if session:display-type = "GUI":U and VALID-HANDLE(C-Win)
+  then delete widget C-Win.
+  if this-procedure:persistent then delete procedure this-procedure.
+end procedure.
 
 /* _UIB-CODE-BLOCK-END */
 &ANALYZE-RESUME
 
 &ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE enable_UI C-Win  _DEFAULT-ENABLE
-PROCEDURE enable_UI :
+procedure enable_UI :
 /*------------------------------------------------------------------------------
   Purpose:     ENABLE the User Interface
   Parameters:  <none>
@@ -264,19 +265,19 @@ PROCEDURE enable_UI :
                These statements here are based on the "Other 
                Settings" section of the widget Property Sheets.
 ------------------------------------------------------------------------------*/
-  DISPLAY cb-cod fill-name 
-      WITH FRAME DEFAULT-FRAME IN WINDOW C-Win.
-  ENABLE cb-cod 
-      WITH FRAME DEFAULT-FRAME IN WINDOW C-Win.
+  display cb-cod fill-name 
+      with frame DEFAULT-FRAME in window C-Win.
+  enable cb-cod 
+      with frame DEFAULT-FRAME in window C-Win.
   {&OPEN-BROWSERS-IN-QUERY-DEFAULT-FRAME}
-  VIEW C-Win.
-END PROCEDURE.
+  view C-Win.
+end procedure.
 
 /* _UIB-CODE-BLOCK-END */
 &ANALYZE-RESUME
 
 &ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE prPopulateCombo C-Win 
-PROCEDURE prPopulateCombo :
+procedure prPopulateCombo :
 /*------------------------------------------------------------------------------
  Purpose:
  Notes:
@@ -295,4 +296,24 @@ end procedure.
 
 /* _UIB-CODE-BLOCK-END */
 &ANALYZE-RESUME
+
+&ANALYZE-SUSPEND _UIB-CODE-BLOCK _PROCEDURE prSetInitialValueCombo C-Win
+procedure prSetInitialValueCombo:
+/*------------------------------------------------------------------------------
+ Purpose:
+ Notes:
+------------------------------------------------------------------------------*/
+define input  parameter ipSalesRep as character no-undo.
+define variable iIndexSalesRep     as integer   no-undo.
+
+assign 
+    iIndexSalesRep = lookup(ipSalesRep, cb-cod:list-item-pairs in frame {&FRAME-NAME}).
+    cb-cod:screen-value in frame {&FRAME-NAME} = entry(iIndexSalesRep + 1, c-rep-code). 
+    apply "value-changed" to cb-cod.
+
+end procedure.
+    
+/* _UIB-CODE-BLOCK-END */
+&ANALYZE-RESUME
+
 
